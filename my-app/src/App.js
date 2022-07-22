@@ -1,7 +1,15 @@
 import logo from './logo.svg';
 import './App.css';
+import { useQuery } from '@tanstack/react-query'
 
 function App() {
+
+  const { data, error }  = useQuery(['hello-world'] ,()=>{
+    return Promise.resolve(5)
+    })
+    console.log({error, data});
+
+
   return (
     <div className="App">
       <header className="App-header">
