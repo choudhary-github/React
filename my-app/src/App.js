@@ -8,7 +8,7 @@ import queryClient from './react-query-client';
 const fetcher = url => fetch(url).then(res=>res.json())
 function App(){
 
-  const { isLoading, data: posts } = useQuery(['posts'], () => fetcher('https://jsonplaceholder.typicode.com/posts'))
+  const { isLoading, data: posts } = useQuery(['posts'], () => fetcher('https://jsonplaceholder.typicode.com/posts'),{select: result => result.slice(0,6)}) // it gives us the control to limit the no of post.
   // console.log(posts);
   const[postID,setPostID] = useState(null)
 

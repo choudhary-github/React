@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 const fetcher = url => fetch(url).then(res=>res.json())
 const Post = ({postID, goBack}) => {
 
-const { data, isLoading } = useQuery (["post", postID], () => fetcher(`https://jsonplaceholder.typicode.com/posts/${postID}`), {cacheTime:5000}) // cached time of 5 second
+const { data, isLoading } = useQuery (["post", postID], () => fetcher(`https://jsonplaceholder.typicode.com/posts/${postID}`))
 
   if(isLoading){
     return <p>Loading...</p>
