@@ -3,6 +3,7 @@ import './App.css';
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import Post from './Post';
+import queryClient from './react-query-client';
 
 const fetcher = url => fetch(url).then(res=>res.json())
 function App(){
@@ -21,8 +22,9 @@ function App(){
   return(
     <div className='App'>
       {posts.map(post=>{
+          const cachedPost = queryClient.getQueryData(['post', post.id])
         return <p key={post.id}>
-          <a onClick={() => setPostID(post.id)} href='/#'>{post.id} - {post.title}</a></p>
+          <a onClick={() => setPostID(post.id)} href='/#'>{post.id} - {post.title}</a>{cachedPost?<b>(visited)</b>:''}</p>
       })}
     </div>
   )
