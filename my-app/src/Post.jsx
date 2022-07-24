@@ -5,7 +5,7 @@ const fetcher = url => fetch(url).then(res=>res.json())
 const Post = ({postID, goBack}) => {
 
 const { data, isLoading } = useQuery (["post", postID], () => fetcher(`https://jsonplaceholder.typicode.com/posts/${postID}`),{
-  staleTime: Infinity
+  staleTime: 10000
 })
 
   if(isLoading){
