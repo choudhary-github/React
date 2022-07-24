@@ -8,8 +8,7 @@ import queryClient from './react-query-client';
 const fetcher = url => fetch(url).then(res=>res.json())
 function App(){
 
-  const { isLoading, data: posts } = useQuery(['posts'], () => fetcher('https://jsonplaceholder.typicode.com/posts'),{select: result => result.slice(0,6)}) // it gives us the control to limit the no of post.
-  // console.log(posts);
+  const { isLoading, data: posts } = useQuery(['posts'], () => fetcher('https://jsonplaceholder.typicode.com/posts'))
   const[postID,setPostID] = useState(null)
 
   if(isLoading){
@@ -19,12 +18,23 @@ function App(){
         return <Post postID={postID} goBack={()=> setPostID(null)}/>
   }
 
+  function mutateTitle(ID){
+    queryClient.setQueriesData(['post', ID], oldData=>{
+      if(oldData){
+        return{
+          ...oldData,
+          title: 'This is Mutated...'
+        }
+      }
+    })
+  }
+
   return(
     <div className='App'>
       {posts.map(post=>{
           const cachedPost = queryClient.getQueryData(['post', post.id])
         return <p key={post.id}>
-          <a onClick={() => setPostID(post.id)} href='/#'>{post.id} - {post.title}</a>{cachedPost?<b>(visited)</b>:''}</p>
+          <a onClick={() => setPostID(post.id)} href='/#'>{post.id} - {post.title}</a>{cachedPost?<b>(visited)</b>:''}<button onClick={()=>mutateTitle(post.id)}>mutate the title</button></p>
       })}
     </div>
   )
