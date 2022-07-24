@@ -3,17 +3,27 @@ import './App.css';
 import { useMutation } from '@tanstack/react-query'
 
 const timer = duration => {
-  return new Promise (resolve => {
+  return new Promise ((resolve, reject) => {
     setTimeout(()=>{
-      resolve()
-      console.log('Sucessful');
+      resolve(1000)
+      console.log('Successful');
     }, duration)
   })
 }
 
 function App(){
 
-  const mutation = useMutation(() => timer(1000))
+  const mutation = useMutation(() => timer(1000),{
+    onSuccess(data){
+      console.log('request is completed',{data});
+    },
+    onError(error){
+      console.log('Error with req',{error});
+    },
+    onSettled(){
+      console.log('request either error or successful');
+    }
+  })
 
   async function callMutation(){
     console.log('updating post...');
