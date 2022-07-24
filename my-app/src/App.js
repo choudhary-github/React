@@ -1,46 +1,31 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import Post from './Post';
 
+const fetcher = url => fetch(url).then(res=>res.json())
+function App(){
 
-function Button() {
-  const { data, error }  = useQuery(['hello-world'] , ()=>{
-    return new Promise(resolve =>{setTimeout(()=>resolve(Math.random()), 2000)
-    })
-  })
-    console.log({error, data});
-    
-    return <button>I am a button {data}</button>
-}
+  const { isLoading, data: posts } = useQuery(['posts'], () => fetcher('https://jsonplaceholder.typicode.com/posts'))
+  // console.log(posts);
+  const[postID,setPostID] = useState(null)
 
-
-
-function App() {
-  const[visible,setVisible] = useState(true)
-  function hideButton(){
-    setVisible(visible => !visible)
+  if(isLoading){
+    return <h1>Loading...</h1>
+   }
+  if(postID !== null){
+        return <Post postID={postID} goBack={()=> setPostID(null)}/>
   }
-  return (
-    <div className="App">
-      <header className="App-header">
-        {visible && <Button/>}
-        <button onClick={hideButton}>Toggle</button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+  return(
+    <div className='App'>
+      {posts.map(post=>{
+        return <p key={post.id}>
+          <a onClick={() => setPostID(post.id)} href='/#'>{post.id} - {post.title}</a></p>
+      })}
     </div>
-  );
+  )
 }
 
 export default App;
