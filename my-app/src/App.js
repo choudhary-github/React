@@ -1,41 +1,30 @@
 // import logo from './logo.svg';
 import './App.css';
-import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
-import Post from './Post';
-import queryClient from './react-query-client';
+import { useMutation } from '@tanstack/react-query'
 
-const fetcher = url => fetch(url).then(res=>res.json())
+const timer = duration => {
+  return new Promise (resolve => {
+    setTimeout(()=>{
+      resolve()
+      console.log('Sucessful');
+    }, duration)
+  })
+}
+
 function App(){
 
-  const { isLoading, data: posts } = useQuery(['posts'], () => fetcher('https://jsonplaceholder.typicode.com/posts'))
-  const[postID,setPostID] = useState(null)
+  const mutation = useMutation(() => timer(1000))
 
-  if(isLoading){
-    return <h1>Loading...</h1>
-   }
-  if(postID !== null){
-        return <Post postID={postID} goBack={()=> setPostID(null)}/>
-  }
-
-  function mutateTitle(ID){
-    queryClient.setQueriesData(['post', ID], oldData=>{
-      if(oldData){
-        return{
-          ...oldData,
-          title: 'This is Mutated...'
-        }
-      }
-    })
+  async function callMutation(){
+    console.log('updating post...');
+    await mutation.mutateAsync()
+    console.log('post updated');
   }
 
   return(
     <div className='App'>
-      {posts.map(post=>{
-          const cachedPost = queryClient.getQueryData(['post', post.id])
-        return <p key={post.id}>
-          <a onClick={() => setPostID(post.id)} href='/#'>{post.id} - {post.title}</a>{cachedPost?<b>(visited)</b>:''}<button onClick={()=>mutateTitle(post.id)}>mutate the title</button></p>
-      })}
+      <h1>Mutation</h1>
+      <button onClick={callMutation}>Click me</button>
     </div>
   )
 }
