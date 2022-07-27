@@ -2,39 +2,36 @@
 import './App.css';
 import { useMutation } from '@tanstack/react-query'
 
-const timer = duration => {
-  return new Promise ((resolve, reject) => {
-    setTimeout(()=>{
-      resolve(1000)
-      console.log('Successful');
-    }, duration)
-  })
-}
-
+const fetcher = (url, body) => fetch(url,{
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(body)
+})
 
 function App(){
 
-  const mutation = useMutation(() => timer(1000),{
+  const mutation = useMutation((body) => fetcher('/api/create-record', body),{
     onSuccess(data){
-      console.log('request is completed',{data});
+      console.log('Got response from backend',{data});
     },
     onError(error){
-      console.log('Error with req',{error});
-    },
-    onSettled(){
-      console.log('request either error or successful');
+      console.log('Got error from backend',{error});
     }
   })
 
-  async function callMutation(){
-    console.log('updating post...');
-    await mutation.mutateAsync()
-    console.log('post updated');
+  function callMutation(){
+    mutation.mutate()
   }
 
   return(
     <div className='App'>
-      <h1>Mutation</h1>
+      <h1>Some fav languages...</h1>
+      <form action="./post" method="post"
+			className="form">
+		<button type="submit">Connected?</button>
+		</form>
       <button onClick={callMutation}>Click me</button>
     </div>
   )
