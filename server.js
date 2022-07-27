@@ -1,9 +1,18 @@
 const express = require("express");
 const app = express();
 
-app.post("/post", (req, res) => {
-console.log("Connected to React");
-res.redirect("/");
+app.use(express.json())
+
+const favLangs = ['Javascript','HTML','CSS','React']
+
+app.get('/api/get-records',(req,res)=>{
+    res.json({lang: favLangs})
+})
+
+app.post("/api/create-record", (req, res) => {
+    const record = req.body.record
+    favLangs.push(record)
+    res.json({status: 'ok'})
 });
 
 // const PORT = process.env.PORT || 3001;
