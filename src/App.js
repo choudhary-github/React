@@ -1,61 +1,41 @@
-// import logo from './logo.svg';
-import './App.css';
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { useState } from 'react';
-import queryClient from './react-query-client';
+import React, { useReducer } from 'react'
+import './App.css'
 
-const fetcher = (url, body) => fetch(url,{
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(body)
-})
-
-function App(){
-  const [tempLang,setTempLang] = useState('')
-  const mutation = useMutation((body) => fetcher(`/api/create-record`, body),{
-    onSuccess(data){
-      console.log('Got response from backend',{data});
-      setTempLang('')
-      queryClient.invalidateQueries('favLangs')
-    },
-    onError(error){
-      console.log('Got error from backend',{error});
+function reducer(state,action){
+  switch (action.type) {
+    case 'INCREMENT':{
+      return{
+        ...state,
+        counter: state.counter + state.step
+      } 
+    }  
+    case 'Increment_Step':{
+      return{
+        ...state,
+        step: state.step + action.payload
+      }
     }
-  })
-  
-  const {data: favLangs, isLoading, isError } = useQuery(['favLangs'], () => {
-    return fetch('/api/get-records').then(t => t.json())
-  },{
-    select: data => data.lang
-  })
-
-  function callMutation(){
-    mutation.mutate({record: tempLang})
+    case 'Decrement_Step':{
+      return{
+        ...state,
+        step: state.step - action.payload
+      }
+    }
+    default:{
+      console.log(state.step)
+      return state
+    }
+      
   }
-
-  if(isLoading){
-    return <h1>Loading...</h1>
-  }
-
-  if(isError){
-    return <p>Error with Req</p>
-  }
-
-
+}
+export default function App(){
+  const[state,dispatch] = useReducer(reducer,{counter:0,step:0})
   return(
     <div className='App'>
-      <h1>Some fav languages...</h1>
-    {
-      favLangs.map(lang => {
-        return <li key={lang}>{lang}</li>
-      })
-    }
-    <input type='text' value={tempLang} onChange={e => setTempLang(e.target.value)} />
-      <button onClick={callMutation}>Click me</button>
+      <h1 onClick={()=>dispatch({type: 'INCREMENT'})}>Counter: {state.counter}</h1>
+      <h3>Step: {state.step}</h3>
+      <button onClick={()=>dispatch({type:'Increment_Step', payload: 1})}>+</button>
+      <button onClick={()=>dispatch({type:'Decrement_Step', payload: 1})}>-</button>
     </div>
   )
 }
-
-export default App;
