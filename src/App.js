@@ -1,41 +1,39 @@
 import React, { useReducer } from 'react'
 import './App.css'
+import Context from './Context'
+import RemoteComponent from './RemoteComponent'
 
-function reducer(state,action){
-  switch (action.type) {
-    case 'INCREMENT':{
-      return{
+function reducer(state, action){
+  switch (action.type){
+    case 'SET_DARK_THEME':{
+      return {
         ...state,
-        counter: state.counter + state.step
-      } 
-    }  
-    case 'Increment_Step':{
-      return{
-        ...state,
-        step: state.step + action.payload
+        theme: 'dark'
       }
     }
-    case 'Decrement_Step':{
+    case 'SET_LIGHT_THEME':{
       return{
         ...state,
-        step: state.step - action.payload
+        theme: 'light'
       }
     }
-    default:{
-      console.log(state.step)
-      return state
-    }
-      
+    default:
   }
 }
-export default function App(){
-  const[state,dispatch] = useReducer(reducer,{counter:0,step:0})
+
+function App(){
+
+  const[state,dispatch] = useReducer(reducer,{
+    theme:'dark'
+  })
   return(
     <div className='App'>
-      <h1 onClick={()=>dispatch({type: 'INCREMENT'})}>Counter: {state.counter}</h1>
-      <h3>Step: {state.step}</h3>
-      <button onClick={()=>dispatch({type:'Increment_Step', payload: 1})}>+</button>
-      <button onClick={()=>dispatch({type:'Decrement_Step', payload: 1})}>-</button>
+      <Context.Provider value={{state,dispatch}}>
+        <h2> I am a local</h2>
+      <RemoteComponent/>
+      </Context.Provider>
     </div>
   )
 }
+
+export default App
